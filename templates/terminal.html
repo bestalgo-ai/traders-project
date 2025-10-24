@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Live Terminal | Infocap Securities</title>
+
+    <!-- ✅ Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #f8f9fa;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .ltp-box {
+            height: 320px;
+            overflow-y: auto;
+            font-family: "Courier New", monospace;
+            font-size: 16px;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .trade-log {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .company-tag {
+            color: #00bfff;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+        /* 🟡 Stylish notice boxes for WAIT / CLOSED */
+        
+        .status-box {
+            text-align: center;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 40px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        .status-wait {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffce3d;
+            color: #ffce3d;
+            box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+        }
+        
+        .status-closed {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.4);
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card shadow-lg border-0 bg-dark text-light">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-info"><i class="bi bi-terminal"></i> Live Trade Terminal</h5>
+                <span id="marginDisplay" class="text-muted small">Margin: --</span>
+            </div>
+
+            <div class="card-body">
+                <!-- Scrollable LTP Feed -->
+                <div id="ltpFeed" class="ltp-box mb-3">
+                    <p class="text-secondary">Waiting for price updates...</p>
+                </div>
+
+                <!-- Buy/Sell Buttons -->
+                <div class="d-flex justify-content-center gap-3 mb-3">
+                    <button id="buyBtn" class="btn btn-success px-4 fw-semibold">
+                        <i class="bi bi-arrow-up-circle"></i> BUY
+                    </button>
+                    <button id="sellBtn" class="btn btn-danger px-4 fw-semibold">
+                        <i class="bi bi-arrow-down-circle"></i> SELL
+                    </button>
+                </div>
+
+                <!-- Order Log -->
+                <div id="tradeLog" class="trade-log text-center text-muted">
+                    Ready to trade.
+                </div>
+            </div>
+
+            <div class="card-footer text-center text-muted small">
+                <i class="bi bi-clock-history"></i> Auto-updating every 2 seconds
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let lastPrice = null;
+        let currentCompany = "--";
+        let currentMargin = "--";
+        let lastAlertTime = null; // ✅ prevent repeat alert
+
+        // =============================
+        //  FETCH LTP (Updated visuals)
+        // =============================
+        async function fetchLTP() {
+            try {
+                const res = await fetch('/get_trade_ltp');
+                const data = await res.json();
+
+                const ltpFeed = document.getElementById('ltpFeed');
+                const newLine = document.createElement('div');
+
+                // ✅ Handle time-based status messages visually
+                if (data.ltp === "WAIT") {
+                    ltpFeed.innerHTML = `
+                        <div class="status-box status-wait">
+                            <h5>🕒 Waiting for Entry Time</h5>
+                            <p class="mb-0">Trading will start once the entry time is reached.</p>
+                        </div>`;
+                    document.getElementById("marginDisplay").textContent = "Margin: --";
+                    return;
+                }
+                if (data.ltp === "CLOSED") {
+                    ltpFeed.innerHTML = `
+                        <div class="status-box status-closed">
+                            <h5>📴 Trading Window Closed</h5>
+                            <p class="mb-0">The market session has ended for today.</p>
+                        </div>`;
+                    document.getElementById("marginDisplay").textContent = "Margin: --";
+                    return;
+                }
+
+                const price = data.ltp === "Error" ? "--" : parseFloat(data.ltp).toFixed(2);
+                const company = data.company || data.instrument || "N/A";
+                currentCompany = company;
+                currentMargin = data.margin || "--";
+
+                let colorClass = 'text-warning';
+                if (lastPrice) {
+                    if (price > lastPrice) colorClass = 'text-success';
+                    else if (price < lastPrice) colorClass = 'text-danger';
+                }
+                lastPrice = price;
+
+                newLine.innerHTML = `<span class="company-tag">${company}</span> <span class="${colorClass}">₹${price}</span>`;
+                ltpFeed.appendChild(newLine);
+
+                if (ltpFeed.children.length > 60) ltpFeed.removeChild(ltpFeed.firstChild);
+                ltpFeed.scrollTop = ltpFeed.scrollHeight;
+
+                document.getElementById("marginDisplay").textContent = "Margin: " + currentMargin;
+            } catch (err) {
+                console.error("Error fetching LTP:", err);
+            }
+        }
+
+        setInterval(fetchLTP, 2000);
+        fetchLTP();
+
+        // =============================
+        //  PLACE ORDER
+        // =============================
+        async function placeOrder(side) {
+            try {
+                const symbol = currentCompany || "NIFTY";
+                const currentLTP = lastPrice || "--";
+                const quantity = 1;
+
+                if (!symbol || symbol === "--") {
+                    showLog("⚠️ No company selected for trading!", "text-warning");
+                    return;
+                }
+
+                const feed = document.getElementById('ltpFeed');
+                const instantLine = document.createElement('div');
+                const color = side === "BUY" ? "text-success" : "text-danger";
+                const timeNow = new Date().toLocaleTimeString();
+
+                instantLine.innerHTML = `<span class="${color}">✅ ${side} order placed instantly for ${symbol} at ₹${currentLTP} — ${timeNow}</span>`;
+                feed.appendChild(instantLine);
+                feed.scrollTop = feed.scrollHeight;
+
+                const payload = JSON.stringify({
+                    side,
+                    symbol
+                });
+                const blob = new Blob([payload], {
+                    type: 'application/json'
+                });
+                navigator.sendBeacon("/place_order", blob);
+
+                showLog(`✅ ${side} order initiated for ${symbol} at ₹${currentLTP}`, color);
+
+            } catch (err) {
+                console.error("Error placing order:", err);
+                showLog("❌ Error placing order!", "text-danger");
+            }
+        }
+
+        function showLog(message, colorClass) {
+            const logBox = document.getElementById("tradeLog");
+            logBox.className = "trade-log text-center fw-semibold " + colorClass;
+            logBox.innerHTML = message;
+        }
+
+        document.getElementById("buyBtn").addEventListener("click", () => placeOrder("BUY"));
+        document.getElementById("sellBtn").addEventListener("click", () => placeOrder("SELL"));
+
+        // =============================
+        //  MONITOR ALERTS (Target/Stoploss)
+        // =============================
+        async function checkMonitor() {
+            try {
+                const res = await fetch("/monitor_status");
+                const data = await res.json();
+
+                if (data && data.symbol && data.status) {
+                    if (data.time === lastAlertTime) return;
+                    lastAlertTime = data.time;
+
+                    const ltpFeed = document.getElementById('ltpFeed');
+                    const alertLine = document.createElement('div');
+                    const color = data.type === "target" ? "text-success" : "text-danger";
+
+                    alertLine.innerHTML = `
+                        <span class="${color}">⚡ ${data.status} for ${data.symbol} @ ₹${data.price} — Auto-sold at ${data.time}</span>
+                    `;
+                    ltpFeed.appendChild(alertLine);
+                    ltpFeed.scrollTop = ltpFeed.scrollHeight;
+                }
+            } catch (err) {
+                console.error("Monitor fetch error:", err);
+            }
+        }
+
+        setInterval(checkMonitor, 2000);
+    </script>
+
+</body>
+
+</html>

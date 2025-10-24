@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trade Dashboard | Infocap Securities</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+
+    <style>
+        body {
+            background-color: #f5f8fc;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+        
+        .dashboard-container {
+            width: 90%;
+            max-width: 900px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .header h3 {
+            font-weight: 600;
+            color: #0073e6;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-title {
+            color: #0073e6;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        
+        .card-body {
+            text-align: center;
+            padding: 18px 10px;
+        }
+        
+        input,
+        select {
+            text-align: center;
+            border: none;
+            font-weight: 600;
+            background: transparent;
+            outline: none;
+            width: 100%;
+        }
+        
+        input:focus,
+        select:focus {
+            outline: none;
+        }
+        
+        .btn-save {
+            margin-top: 25px;
+            background-color: #0073e6;
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            transition: 0.3s;
+        }
+        
+        .btn-save:hover {
+            background-color: #005bb5;
+        }
+        
+        .status-msg {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h3><i class="bi bi-graph-up"></i> Traders Dashboard</h3>
+            <p class="text-muted mb-0">Set up your trade configuration below</p>
+        </div>
+
+        <div class="row g-3">
+
+            <!-- ✅ Segment Dropdown -->
+            <div class="col-md-4 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title"><i class="bi bi-layers"></i> Segment</div>
+                        <select id="segment">
+                            <option value="">Select</option>
+                            <option value="EQUITY">Equity</option>
+                            <option value="FUTURES">Futures</option>
+                            <option value="OPTIONS">Options</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ✅ Index Dropdown -->
+            <div class="col-md-4 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title"><i class="bi bi-bar-chart"></i> Index</div>
+                        <select id="instrument" disabled>
+                            <option value="">Select</option>
+                            <option value="NIFTY">NIFTY</option>
+                            <option value="BANKNIFTY">BANKNIFTY</option>
+                            <option value="FINNIFTY">FINNIFTY</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ✅ Company Dropdown -->
+            <div class="col-md-4 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title"><i class="bi bi-building"></i> Company</div>
+                        <select id="company" disabled>
+                            <option value="">Select</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quantity -->
+            <div class="col-md-4 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title"><i class="bi bi-123"></i> Quantity</div>
+                        <input type="number" id="quantity" min="1" value="{{ quantity }}" readonly>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- ✅ Entry Time (Digital 00:00:00 format) -->
+            <div class="col-md-4 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title"><i class="bi bi-clock"></i> Entry Time</div>
+                        <input type="time" id="entry-time" value="09:15:00" step="1" class="form-control text-center fw-semibold">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ✅ Exit Time (Digital 00:00:00 format) -->
+            <div class="col-md-4 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title"><i class="bi bi-hourglass-split"></i> Exit Time</div>
+                        <input type="time" id="exit-time" value="15:30:00" step="1" class="form-control text-center fw-semibold">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Target -->
+            <div class="col-md-6 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title"><i class="bi bi-arrow-up-right"></i> Target (₹)</div>
+                        <input type="number" id="target" placeholder="Target">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stop Loss -->
+            <div class="col-md-6 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title"><i class="bi bi-arrow-down"></i> Stop Loss (₹)</div>
+                        <input type="number" id="stoploss" placeholder="Stop Loss">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <button class="btn-save" id="saveBtn">💾 Save Settings</button>
+        <div id="message" class="status-msg"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ✅ Full 50+ Companies
+        const companiesData = {
+            EQUITY: {
+                NIFTY: ["ADANIENT", "ADANIPORTS", "APOLLOHOSP", "ASIANPAINT", "AXISBANK", "BAJAJ-AUTO", "BAJAJFINSV", "BAJFINANCE",
+                    "BEL", "BHARTIARTL", "CIPLA", "COALINDIA", "DRREDDY", "EICHERMOT", "GRASIM", "HCLTECH", "HDFCBANK", "HDFCLIFE",
+                    "HINDALCO", "HINDUNILVR", "ICICIBANK", "INDIGO", "INFY", "ITC", "JIOFIN", "JSWSTEEL", "KOTAKBANK", "LT",
+                    "M&M", "MARUTI", "MAXHEALTH", "NESTLEIND", "NTPC", "ONGC", "POWERGRID", "RELIANCE", "SBILIFE", "SBIN",
+                    "SHRIRAMFIN", "SUNPHARMA", "TATACONSUM", "TATAMOTORS", "TATASTEEL", "TCS", "TECHM", "TITAN", "TRENT",
+                    "ULTRACEMCO", "WIPRO"
+                ],
+                BANKNIFTY: ["HDFCBANK", "ICICIBANK", "AXISBANK", "KOTAKBANK", "SBIN", "INDUSINDBK", "PNB", "BANDHANBNK"],
+                FINNIFTY: ["BAJFINANCE", "HDFCBANK", "ICICIBANK", "AXISBANK", "HDFCAMC", "KOTAKBANK", "SBILIFE", "PEL"]
+            },
+            FUTURES: {
+                NIFTY: ["RELIANCE", "TCS", "INFY", "ICICIBANK", "HDFCBANK", "SBIN", "LT", "AXISBANK", "ITC", "BHARTIARTL",
+                    "MARUTI", "HINDUNILVR", "SUNPHARMA", "BAJFINANCE", "TATAMOTORS", "TECHM", "INDUSINDBK", "ONGC", "WIPRO",
+                    "KOTAKBANK"
+                ],
+                BANKNIFTY: ["HDFCBANK", "ICICIBANK", "AXISBANK", "KOTAKBANK", "SBIN", "INDUSINDBK"],
+                FINNIFTY: ["BAJFINANCE", "ICICIBANK", "HDFCBANK", "SBILIFE", "KOTAKBANK"]
+            },
+            OPTIONS: {
+                NIFTY: ["RELIANCE", "TCS", "INFY", "HDFCBANK", "ICICIBANK", "SBIN", "LT", "AXISBANK", "ITC", "HINDUNILVR"],
+                BANKNIFTY: ["HDFCBANK", "ICICIBANK", "AXISBANK", "KOTAKBANK", "SBIN"],
+                FINNIFTY: ["HDFCBANK", "ICICIBANK", "BAJFINANCE", "SBILIFE"]
+            }
+        };
+
+        const segment = document.getElementById("segment");
+        const instrument = document.getElementById("instrument");
+        const company = document.getElementById("company");
+
+        instrument.disabled = true;
+        company.disabled = true;
+
+        segment.addEventListener("change", () => {
+            if (segment.value) {
+                instrument.disabled = false;
+            } else {
+                instrument.disabled = true;
+                company.disabled = true;
+                instrument.value = "";
+                company.value = "";
+            }
+        });
+
+        instrument.addEventListener("change", () => {
+            company.innerHTML = '<option value="">Select</option>';
+            if (segment.value && instrument.value) {
+                company.disabled = false;
+                const list = companiesData[segment.value][instrument.value] || [];
+                list.forEach(c => {
+                    const opt = document.createElement("option");
+                    opt.value = c;
+                    opt.textContent = c;
+                    company.appendChild(opt);
+                });
+            } else {
+                company.disabled = true;
+            }
+        });
+
+        document.getElementById("saveBtn").addEventListener("click", async() => {
+            const payload = {
+                segment: document.getElementById("segment").value,
+                instrument: document.getElementById("instrument").value,
+                company: document.getElementById("company").value,
+                quantity: document.getElementById("quantity").value,
+                entry_time: document.getElementById("entry-time").value,
+                exit_time: document.getElementById("exit-time").value,
+                target: document.getElementById("target").value,
+                stoploss: document.getElementById("stoploss").value,
+            };
+
+            if (!payload.segment || !payload.instrument || !payload.company || !payload.quantity) {
+                document.getElementById("message").innerHTML = "<div class='text-danger'>⚠️ Please fill all fields.</div>";
+                return;
+            }
+
+            document.getElementById("message").innerHTML = "<div class='text-info'>💾 Saving trade settings...</div>";
+
+            try {
+                const res = await fetch("/save_trade_settings", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                if (data.status === "redirect") {
+                    document.getElementById("message").innerHTML = "<div class='text-success'>✅ Saved! Redirecting...</div>";
+                    setTimeout(() => window.location.href = data.redirect_url, 1000);
+                } else {
+                    document.getElementById("message").innerHTML = "<div class='text-danger'>" + data.message + "</div>";
+                }
+            } catch (err) {
+                document.getElementById("message").innerHTML = "<div class='text-danger'>❌ Error saving trade</div>";
+            }
+        });
+        // ✅ Lock Quantity for Traders (but use backend-updated value)
+        async function lockTraderQuantity() {
+            try {
+                const res = await fetch("/get_user_role");
+                const data = await res.json();
+
+                if (data.role === "Trader") {
+                    const qtyInput = document.getElementById("quantity");
+
+                    // 👇 don't overwrite the backend value
+                    qtyInput.readOnly = true;
+                    qtyInput.style.backgroundColor = "#f0f0f0";
+                    qtyInput.style.cursor = "not-allowed";
+                    qtyInput.title = "Quantity is fixed by Risk Manager.";
+                }
+            } catch (err) {
+                console.error("Role check failed:", err);
+            }
+        }
+        lockTraderQuantity();
+    </script>
+</body>
+
+</html>
