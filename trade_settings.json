@@ -1,0 +1,30 @@
+[
+    {
+        "user": "nithya@gmail.com",
+        "segment": "EQUITY",
+        "instrument": "NIFTY",
+        "company": "SBIN",
+        "quantity": 75,
+        "entry_time": "12:13:00",
+        "exit_time": "12:30:00",
+        "target": 907.0,
+        "stoploss": 904.0,
+        "timestamp": "2025-10-24 12:11:44",
+        "entry_price": 906.1,
+        "closed": false
+    },
+    {
+        "user": "support@bestalgo.ai",
+        "segment": "EQUITY",
+        "instrument": "NIFTY",
+        "company": "BAJFINANCE",
+        "quantity": 200,
+        "entry_time": "09:15:00",
+        "exit_time": "15:30:00",
+        "target": 12500.0,
+        "stoploss": 1111.0,
+        "timestamp": "2025-10-24 14:25:27",
+        "entry_price": 1090.25,
+        "closed": false
+    }
+]

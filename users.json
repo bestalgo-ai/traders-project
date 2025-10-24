@@ -1,0 +1,55 @@
+[
+    {
+        "name": "vishnu pandian",
+        "email": "support@bestalgo.ai",
+        "mobile": "09600898633",
+        "password": "vishnu",
+        "role": "Trader",
+        "details": {
+            "user_id": "hv2275",
+            "password": "jaam@1984",
+            "api_key": "rc7r4pxr0ycumkxf",
+            "secret_key": "uiw1vmlejedaautr6b1csk47mwfjebgz",
+            "totp": "O55HZVUY3P473IIUOM3MT6H7EOTLJDQL",
+            "access_token": "yMJI73LpJavr8sE9VzKIJeLnPpYOpg0T"
+        }
+    },
+    {
+        "name": "Prathiba",
+        "email": "prathiba26@gmail.com",
+        "mobile": "9865286462",
+        "password": "Prathi1626",
+        "role": "Trader",
+        "details": {
+            "user_id": "hv2275",
+            "password": "jaam@1984",
+            "api_key": "rc7r4pxr0ycumkxf",
+            "secret_key": "uiw1vmlejedaautr6b1csk47mwfjebgz",
+            "totp": "O55HZVUY3P473IIUOM3MT6H7EOTLJDQL",
+            "access_token": "NH5L1a06gfcklApgGM78799Tr7LOsGLe"
+        }
+    },
+    {
+        "name": "Admin User",
+        "email": "admin@infocap.co.in",
+        "mobile": "9999999999",
+        "password": "admin123",
+        "role": "Admin",
+        "details": {}
+    },
+    {
+        "name": "nithya",
+        "email": "nithya@gmail.com",
+        "mobile": "9585758343",
+        "password": "shaveen",
+        "role": "Trader",
+        "details": {
+            "user_id": "hv2275",
+            "password": "jaam@1984",
+            "api_key": "rc7r4pxr0ycumkxf",
+            "secret_key": "uiw1vmlejedaautr6b1csk47mwfjebgz",
+            "totp": "O55HZVUY3P473IIUOM3MT6H7EOTLJDQL",
+            "access_token": "yMJI73LpJavr8sE9VzKIJeLnPpYOpg0T"
+        }
+    }
+]
